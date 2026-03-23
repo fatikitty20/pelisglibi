@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Catálogo de Películas (Ghibli) • Principal</title>
+
+  <!-- Evita el 404 del favicon (opcional pero recomendado) -->
+  <link rel="icon" href="data:," />
+
+  <!-- Estilos WOW (solo nuestros) -->
+  <link rel="stylesheet" href="css/wow.css" />
+
+  <!-- Manejo global de errores del profe (NO tocar) -->
+  <script type="module" src="js/lib/manejaErrores.js"></script>
+</head>
+
+<body>
+  <header class="wow-header">
+    <section class="wow-container">
+      <h1 class="wow-title">🎬 Catálogo de Películas (Ghibli)</h1>
+
+      <!-- Saludo visible -->
+      <p id="saludoHeader" class="wow-saludo" aria-live="polite"></p>
+
+      <!-- Navegación (misma página) -->
+      <nav class="wow-tabs" role="tablist" aria-label="Navegación principal">
+        <button id="tab-inicio" class="wow-tab is-active" role="tab" aria-selected="true">
+          INICIO
+        </button>
+        <button id="tab-favoritos" class="wow-tab" role="tab" aria-selected="false">
+          PELIS AGREGADAS
+        </button>
+      </nav>
+    </section>
+  </header>
+
+  <main class="wow-main">
+
+    <section class="wow-container">
+      <!-- Mensajes amigables -->
+      <section id="mensajes" class="wow-msg" aria-live="polite" hidden></section>
+
+      <!-- FORM VISIBLE: NOMBRE DEL USUARIO (procesa form + JSON + validación) -->
+      <form id="formUsuario" class="wow-form" method="post" aria-labelledby="user-title">
+        <h2 id="user-title" class="wow-form-title">👋 Tu nombre</h2>
+        <p class="wow-help">Escribe tu nombre para mostrar un saludo dentro de la app.</p>
+
+        <label class="wow-field">
+          <span>Nombre</span>
+          <input name="usuario" id="campoUsuario" placeholder="Ej: Fatima" autocomplete="given-name" required />
+        </label>
+
+        <p class="wow-form-actions">
+          <button id="btnUsuario" type="submit" class="wow-btn wow-btn-secondary">
+            Guardar nombre
+          </button>
+        </p>
+
+        <p id="saludoInline" class="wow-help" aria-live="polite"></p>
+      </form>
+
+      <!-- FORM VISIBLE: FAVORITOS (contrato del profe: name="nombre") -->
+      <form id="formFavorito" class="wow-form" method="post" aria-labelledby="fav-title">
+        <h2 id="fav-title" class="wow-form-title">💾 Guardar en favoritos</h2>
+        <p class="wow-help">Selecciona una película del catálogo. El campo se llena y puedes guardarla.</p>
+
+        <label class="wow-field">
+          <span>Nombre (contrato del backend)</span>
+          <input name="nombre" id="campoNombre" readonly placeholder="Selecciona una película del catálogo…" />
+        </label>
+
+        <p class="wow-form-actions">
+          <button id="btnGuardar" type="submit" class="wow-btn wow-btn-primary">
+            Guardar favorito
+          </button>
+        </p>
+      </form>
+    </section>
+
+    <!-- INICIO / CATÁLOGO -->
+    <section id="secCatalogo" class="wow-container" aria-labelledby="cat-title">
+      <h2 id="cat-title" class="sr-only">Catálogo</h2>
+
+      <section id="estado" class="wow-state" aria-live="polite">
+        <p class="skeleton skeleton-title"></p>
+        <p class="skeleton skeleton-subtitle"></p>
+      </section>
+
+      <ul id="gridPeliculas" class="wow-grid" aria-live="polite" aria-busy="true"></ul>
+    </section>
+
+    <!-- PELIS AGREGADAS / FAVORITOS -->
+    <section id="secFavoritos" class="wow-container" aria-labelledby="fav2-title" hidden>
+      <h2 id="fav2-title" class="sr-only">Películas agregadas</h2>
+
+      <section id="estadoFav" class="wow-state" aria-live="polite" hidden>
+        <p class="skeleton skeleton-title"></p>
+      </section>
+
+      <ul id="gridFavoritos" class="wow-grid" aria-live="polite"></ul>
+
+      <!-- Lista original del profe (oculta, para extraer id/nombre sin romper contrato) -->
+      <ul id="listaOriginal" class="sr-only"></ul>
+
+      <p class="wow-help">Aquí puedes ver tus favoritos y eliminarlos.</p>
+    </section>
+
+  </main>
+
+  <footer class="wow-footer">
+    <section class="wow-container">
+      <small>
+        Datos API:
+        <a class="wow-link" href="https://ghibliapi.vercel.app/films" target="_blank" rel="noopener noreferrer">
+          Studio Ghibli API
+        </a>.
+        Backend y librerías del profesor (sin cambios).
+      </small>
+    </section>
+  </footer>
+
+  <!-- Nuestro módulo -->
+  <script type="module" src="js/peliculas.js"></script>
+</body>
+</html>

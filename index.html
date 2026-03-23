@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width">
+
+ <title>Acceso a base de datos</title>
+
+ <script type="module" src="js/lib/manejaErrores.js"></script>
+
+</head>
+
+<body>
+
+ <h1>Acceso a base de datos</h1>
+
+ <p><a href="agrega.html">Agregar</a></p>
+
+ <ul id="lista">
+  <li><progress max="100">Cargando…</progress></li>
+ </ul>
+
+ <script type="module">
+
+  import { descargaVista } from "./js/lib/descargaVista.js"
+
+  descargaVista("php/pasatiempo-vista-index.php")
+
+ </script>
+
+ </body>
+
+</html>
