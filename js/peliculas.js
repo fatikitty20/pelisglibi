@@ -112,7 +112,8 @@ function preparaUsuario() {
     setBtnLoading(btn, true);
 
     try {
-      const metodoHttp = (form.getAttribute("method") || "GET").toUpperCase();
+      /** @type {"GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "TRACE" | "OPTIONS" | "CONNECT" | "HEAD"} */
+      const metodoHttp = /** @type {any} */ ((form.getAttribute("method") || "GET").toUpperCase());
       const url = new URL(URL_SALUDO, location.href);
       url.searchParams.set("usuario", valor);
       const resp = await consume(recibeJson(url.toString(), metodoHttp));
@@ -172,6 +173,7 @@ async function cargaCatalogo() {
 
 function renderCatalogo(lista) {
   const grid = /** @type {HTMLUListElement|null} */ (el("gridPeliculas"));
+  const permiteSeleccionar = !!el("formFavorito");
   if (!grid) return;
 
   grid.textContent = "";
@@ -221,17 +223,20 @@ function renderCatalogo(lista) {
     pDesc.className = "wow-desc";
     pDesc.textContent = desc;
 
-    const actions = document.createElement("section");
-    actions.className = "wow-actions";
+    art.append(fig, h3, meta, pDesc);
+    if (permiteSeleccionar) {
+      const actions = document.createElement("section");
+      actions.className = "wow-actions";
 
-    const btnSel = document.createElement("button");
-    btnSel.type = "button";
-    btnSel.className = "wow-btn wow-btn-primary";
-    btnSel.textContent = "⭐ Seleccionar";
-    btnSel.addEventListener("click", () => llenaFormulario(title, director, year));
+      const btnSel = document.createElement("button");
+      btnSel.type = "button";
+      btnSel.className = "wow-btn wow-btn-primary";
+      btnSel.textContent = "⭐ Seleccionar";
+      btnSel.addEventListener("click", () => llenaFormulario(title, director, year));
 
-    actions.append(btnSel);
-    art.append(fig, h3, meta, pDesc, actions);
+      actions.append(btnSel);
+      art.append(actions);
+    }
     li.append(art);
     frag.append(li);
   }

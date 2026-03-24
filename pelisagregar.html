@@ -23,6 +23,27 @@
   <main class="wow-main">
     <section class="wow-container">
       <section id="mensajes" class="wow-msg" aria-live="polite" hidden></section>
+
+      <form id="formFavorito" class="wow-form" method="post" aria-labelledby="fav-title">
+        <h2 id="fav-title" class="wow-form-title">💾 Guardar en favoritos</h2>
+        <p class="wow-help">Selecciona una película del catálogo. El campo se llena y puedes guardarla.</p>
+        <label class="wow-field">
+          <span>Nombre (contrato del backend)</span>
+          <input name="nombre" id="campoNombre" readonly placeholder="Selecciona una película del catálogo…" />
+        </label>
+        <p class="wow-form-actions">
+          <button id="btnGuardar" type="submit" class="wow-btn wow-btn-primary">Guardar favorito</button>
+        </p>
+      </form>
+    </section>
+
+    <section id="secCatalogo" class="wow-container" aria-labelledby="cat-title">
+      <h2 id="cat-title" class="sr-only">Catálogo</h2>
+      <section id="estado" class="wow-state" aria-live="polite">
+        <p class="skeleton skeleton-title"></p>
+        <p class="skeleton skeleton-subtitle"></p>
+      </section>
+      <ul id="gridPeliculas" class="wow-grid" aria-live="polite" aria-busy="true"></ul>
     </section>
 
     <section id="secFavoritos" class="wow-container" aria-labelledby="fav2-title">
