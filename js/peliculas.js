@@ -27,10 +27,14 @@ function el(id) {
 }
 
 async function init() {
-  preparaTabs();
   preparaUsuario();
   preparaFavoritosForm();
-  await cargaCatalogo();
+  if (el("secCatalogo")) {
+    await cargaCatalogo();
+  }
+  if (el("secFavoritos")) {
+    await cargaFavoritos();
+  }
   pintaSaludoDesdeStorage();
 }
 
@@ -108,8 +112,10 @@ function preparaUsuario() {
     setBtnLoading(btn, true);
 
     try {
-      // Enviar a saludo.php
-      const resp = await consume(enviaFormRecibeJson(URL_SALUDO, form));
+      const metodoHttp = (form.getAttribute("method") || "GET").toUpperCase();
+      const url = new URL(URL_SALUDO, location.href);
+      url.searchParams.set("usuario", valor);
+      const resp = await consume(recibeJson(url.toString(), metodoHttp));
       const json = await resp.json();
 
       // Guardar en localStorage

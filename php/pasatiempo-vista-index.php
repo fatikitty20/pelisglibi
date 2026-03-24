@@ -18,7 +18,7 @@ foreach ($lista as $modelo) {
  $render .=
   "<li>
      <p>
-      <a href='modifica.html?id=$id'>$nombre</a>
+     <a href='pelisagregar.html?id=$id'>$nombre</a>
      </p>
     </li>";
 }

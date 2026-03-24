@@ -36,7 +36,7 @@ $id = $bd->lastInsertId();
 
 $encodeId = urlencode($id);
 devuelveCreated(
- "/php/pasatiempo-vista-modifica.php?id=$encodeId",
+ "/pelisagregar.html?id=$encodeId",
  [
   "id" => ["value" => $id],
   "nombre" => ["value" => $nombre],
