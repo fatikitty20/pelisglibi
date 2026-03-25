@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . "/lib/favorito-en-saludo.php";
+
 class Bd
 {
  private static ?PDO $pdo = null;
@@ -30,6 +32,11 @@ class Bd
       CONSTRAINT SAL_NOM_NV CHECK(LENGTH(TRIM(SAL_NOMBRE)) > 0),
       CONSTRAINT SAL_COM_NV CHECK(LENGTH(TRIM(SAL_COMENTARIO)) > 0)
      )"
+   );
+
+   $marca = self::$pdo->quote(SALUDO_MARCA_FAVORITO);
+   self::$pdo->exec(
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_saludo_favorito_nombre ON SALUDO(SAL_NOMBRE) WHERE SAL_COMENTARIO = $marca"
    );
   }
 

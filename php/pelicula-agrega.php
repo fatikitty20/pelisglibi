@@ -4,21 +4,20 @@ require_once __DIR__ . "/lib/manejaErrores.php";
 require_once __DIR__ . "/lib/recibeTextoObligatorio.php";
 require_once __DIR__ . "/lib/devuelveCreated.php";
 require_once __DIR__ . "/lib/ProblemDetailsException.php";
+require_once __DIR__ . "/lib/favorito-en-saludo.php";
 require_once __DIR__ . "/Bd.php";
 
 $nombre = recibeTextoObligatorio("nombre");
 
 $bd = Bd::pdo();
 $stmt = $bd->prepare(
- "INSERT INTO PASATIEMPO (
-    PAS_NOMBRE
-   ) values (
-    :PAS_NOMBRE
-   )"
+ "INSERT INTO SALUDO (SAL_NOMBRE, SAL_EDAD, SAL_COMENTARIO)
+  VALUES (:SAL_NOMBRE, 1, :SAL_COMENTARIO)"
 );
 try {
  $stmt->execute([
-  ":PAS_NOMBRE" => $nombre
+  ":SAL_NOMBRE" => $nombre,
+  ":SAL_COMENTARIO" => SALUDO_MARCA_FAVORITO,
  ]);
 } catch (PDOException $ex) {
  if (str_contains($ex->getMessage(), 'UNIQUE constraint failed') || $ex->getCode() === '23000') {
