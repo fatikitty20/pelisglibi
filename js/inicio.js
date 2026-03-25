@@ -33,29 +33,31 @@ function el(id) {
   return document.getElementById(id);
 }
 
-/**
- * @param {unknown} v
- */
-function toStr(v) {
-  return typeof v === "string" ? v : "";
+/** Solo en pelis-agregadas debe mostrarse el botón (no confiar solo en el argumento). */
+function esPaginaAgregadas() {
+  return document.body.getAttribute("data-pagina") === "agregadas";
 }
 
 /**
- * @param {...string} vals
+ * @param {Record<string, unknown>|null|undefined} p
  */
-function firstNonEmpty(...vals) {
-  for (const v of vals) {
-    if (v && v.trim() !== "") return v;
-  }
-  return "";
+function urlImagenPelicula(p) {
+  const a = p?.image;
+  const b = p?.movie_banner;
+  const s =
+    typeof a === "string"
+      ? a.trim()
+      : typeof b === "string"
+        ? b.trim()
+        : "";
+  return s;
 }
 
-/**
- * @param {boolean} mostrarBotonFavorito
- */
-async function cargarCatalogo(mostrarBotonFavorito) {
+async function cargarCatalogo() {
   const catalogo = el("catalogo");
   if (!catalogo) return;
+
+  const mostrarBotonFavorito = esPaginaAgregadas();
 
   const resp = await consume(recibeJson(API_URL));
   const peliculas = await resp.json();
@@ -81,23 +83,28 @@ async function cargarCatalogo(mostrarBotonFavorito) {
           : p.description
         : "";
 
-    const imgSrc = firstNonEmpty(toStr(p?.image), toStr(p?.movie_banner), "");
+    const imgSrc = urlImagenPelicula(p);
 
     const card = document.createElement("article");
     card.className = "wow-card wow-card-body";
 
+    const fig = document.createElement("figure");
+    fig.className = "wow-fig";
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.alt = `Poster: ${title}`;
+    img.className = "wow-img";
+    img.referrerPolicy = "no-referrer";
     if (imgSrc) {
-      const fig = document.createElement("figure");
-      fig.className = "wow-fig";
-      const img = document.createElement("img");
-      img.loading = "lazy";
-      img.decoding = "async";
       img.src = imgSrc;
-      img.alt = `Poster: ${title}`;
-      img.className = "wow-img";
-      fig.append(img);
-      card.append(fig);
+    } else {
+      img.removeAttribute("src");
+      img.alt = "Sin imagen";
+      fig.classList.add("wow-fig-empty");
     }
+    fig.append(img);
+    card.append(fig);
 
     const h3 = document.createElement("h3");
     h3.className = "wow-card-title";
@@ -193,13 +200,14 @@ function prepararSaludo() {
 }
 
 async function main() {
-  const pagina = document.body.dataset.pagina === "agregadas" ? "agregadas" : "inicio";
+  const pagina =
+    document.body.getAttribute("data-pagina") === "agregadas" ? "agregadas" : "inicio";
 
   if (pagina === "inicio") {
     prepararSaludo();
     try {
       await cargarPreviewFavoritos();
-      await cargarCatalogo(false);
+      await cargarCatalogo();
     } catch (e) {
       manejaErrores(e);
     }
@@ -207,8 +215,10 @@ async function main() {
   }
 
   pintarSaludoHeader();
+  window.addEventListener("pageshow", () => pintarSaludoHeader());
+
   try {
-    await cargarCatalogo(true);
+    await cargarCatalogo();
     await inicializarFavoritos();
   } catch (e) {
     manejaErrores(e);

@@ -123,6 +123,20 @@ body{
 .wow-card-body{ padding:12px 12px 14px }
 .wow-card-title{ margin:6px 0 8px; font-weight:800; letter-spacing:.2px; font-size:17px }
 .wow-fig{ margin:0 0 8px }
+.wow-fig-empty{
+  background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.08));
+  border-radius:10px;
+  min-height:170px;
+  display:flex;
+  align-items:center;
+  justify-content:center
+}
+.wow-fig-empty .wow-img{
+  opacity:.35;
+  max-height:80px;
+  width:auto;
+  margin:auto
+}
 .wow-img{
   display:block;
   width:100%;
