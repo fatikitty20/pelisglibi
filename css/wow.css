@@ -85,13 +85,17 @@ body{
 .wow-help{ margin:4px 0 8px; color:var(--muted); font-size:13.5px }
 .wow-field{ display:flex; flex-direction:column; gap:6px; margin:8px 0 }
 .wow-field > span{ color:var(--soft); font-size:13.5px }
-.wow-field input{
+.wow-field input,
+.wow-field textarea{
   width:100%;
   padding:9px 11px;
   border-radius:10px;
   border:1px solid rgba(255,255,255,.1);
   background:#0b1220;
-  color:var(--text)
+  color:var(--text);
+  font:inherit;
+  resize:vertical;
+  min-height:2.5em
 }
 .wow-form-actions{ display:flex; gap:10px; margin-top:6px }
 

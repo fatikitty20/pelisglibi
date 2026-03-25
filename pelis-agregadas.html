@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Películas agregadas • Ghibli</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="css/wow.css" />
+  <script type="module" src="js/lib/manejaErrores.js"></script>
+</head>
+<body>
+  <header class="wow-header">
+    <section class="wow-container">
+      <h1 class="wow-title">🎬 Películas agregadas</h1>
+      <nav class="wow-tabs" aria-label="Navegación principal">
+        <a href="index.html" class="wow-tab">INICIO</a>
+        <a href="pelis-agregadas.html" class="wow-tab is-active" aria-current="page">PELIS AGREGADAS</a>
+      </nav>
+    </section>
+  </header>
+
+  <main class="wow-main">
+    <section class="wow-container">
+      <h2 class="wow-form-title">💾 Tus favoritos</h2>
+      <div id="favoritos" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="wow-footer">
+    <section class="wow-container">
+      <small>
+        <a class="wow-link" href="index.html">Volver al catálogo</a>
+      </small>
+    </section>
+  </footer>
+
+  <script type="module" src="js/favoritos.js"></script>
+</body>
+</html>

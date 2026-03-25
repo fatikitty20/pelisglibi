@@ -12,40 +12,43 @@
   <header class="wow-header">
     <section class="wow-container">
       <h1 class="wow-title">🎬 Catálogo de Películas (Ghibli)</h1>
-      <p id="saludoHeader" class="wow-saludo" aria-live="polite"></p>
       <nav class="wow-tabs" aria-label="Navegación principal">
         <a href="index.html" class="wow-tab is-active" aria-current="page">INICIO</a>
-        <a href="pelisagregar.html" class="wow-tab">PELIS AGREGADAS</a>
+        <a href="pelis-agregadas.html" class="wow-tab">PELIS AGREGADAS</a>
       </nav>
     </section>
   </header>
 
   <main class="wow-main">
     <section class="wow-container">
-      <section id="mensajes" class="wow-msg" aria-live="polite" hidden></section>
-
-      <form id="formUsuario" class="wow-form" method="get" aria-labelledby="user-title">
-        <h2 id="user-title" class="wow-form-title">👋 Tu nombre</h2>
-        <p class="wow-help">Escribe tu nombre para mostrar un saludo dentro de la app.</p>
+      <form id="form-saludo" class="wow-form" method="post">
+        <h2 class="wow-form-title">👋 Saludo</h2>
+        <p class="wow-help">Completa los datos y envía para recibir un mensaje del servidor.</p>
         <label class="wow-field">
           <span>Nombre</span>
-          <input name="usuario" id="campoUsuario" placeholder="Ej: Fatima" autocomplete="given-name"/>
+          <input type="text" name="nombre" autocomplete="given-name" required />
+        </label>
+        <label class="wow-field">
+          <span>Edad</span>
+          <input type="number" name="edad" min="1" max="120" step="1" required />
+        </label>
+        <label class="wow-field">
+          <span>Comentario</span>
+          <textarea name="comentario" rows="3" required placeholder="Escribe un comentario breve…"></textarea>
         </label>
         <p class="wow-form-actions">
-          <button id="btnUsuario" type="submit" class="wow-btn wow-btn-secondary">Guardar nombre</button>
+          <button type="submit" class="wow-btn wow-btn-secondary">Enviar</button>
         </p>
-        <p id="saludoInline" class="wow-help" aria-live="polite"></p>
+        <p class="wow-help">
+          Respuesta:
+          <span id="respuesta" aria-live="polite"></span>
+        </p>
       </form>
-
     </section>
 
-    <section id="secCatalogo" class="wow-container" aria-labelledby="cat-title">
-      <h2 id="cat-title" class="sr-only">Catálogo</h2>
-      <section id="estado" class="wow-state" aria-live="polite">
-        <p class="skeleton skeleton-title"></p>
-        <p class="skeleton skeleton-subtitle"></p>
-      </section>
-      <ul id="gridPeliculas" class="wow-grid" aria-live="polite" aria-busy="true"></ul>
+    <section class="wow-container">
+      <h2 class="wow-form-title">🎞️ Catálogo</h2>
+      <div id="catalogo"></div>
     </section>
   </main>
 
@@ -56,11 +59,10 @@
         <a class="wow-link" href="https://ghibliapi.vercel.app/films" target="_blank" rel="noopener noreferrer">
           Studio Ghibli API
         </a>.
-        Backend y librerías del profesor (sin cambios).
       </small>
     </section>
   </footer>
 
-  <script type="module" src="js/peliculas.js"></script>
+  <script type="module" src="js/inicio.js"></script>
 </body>
 </html>
