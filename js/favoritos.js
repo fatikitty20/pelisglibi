@@ -86,83 +86,86 @@ async function cargaPeliculasApi() {
   }
 }
 
-async function main() {
-  const cont = el("favoritos");
+/**
+ * @param {HTMLElement|null} cont
+ * @param {boolean} conEliminar
+ */
+async function renderFavoritosEnContenedor(cont, conEliminar) {
   if (!cont) return;
 
-  try {
-    await cargaPeliculasApi();
+  await cargaPeliculasApi();
 
-    const resp = await consume(recibeJson(URL_VISTA_IDX));
-    const json = await resp.json();
-    const html = json?.lista?.innerHTML;
-    const tmp = document.createElement("ul");
-    tmp.innerHTML = typeof html === "string" ? html : "";
+  const resp = await consume(recibeJson(URL_VISTA_IDX));
+  const json = await resp.json();
+  const html = json?.lista?.innerHTML;
+  const tmp = document.createElement("ul");
+  tmp.innerHTML = typeof html === "string" ? html : "";
 
-    /** @type {{ id: string; nombre: string }[]} */
-    const items = [];
-    for (const li of Array.from(tmp.querySelectorAll("li"))) {
-      const a = li.querySelector("a[href*='id=']");
-      if (!a) continue;
-      const id =
-        new URL(a.getAttribute("href") || "", location.href).searchParams.get("id") || "";
-      const nombre = (a.textContent || "").trim();
-      if (id && nombre) items.push({ id, nombre });
+  /** @type {{ id: string; nombre: string }[]} */
+  const items = [];
+  for (const li of Array.from(tmp.querySelectorAll("li"))) {
+    const a = li.querySelector("a[href*='id=']");
+    if (!a) continue;
+    const id =
+      new URL(a.getAttribute("href") || "", location.href).searchParams.get("id") || "";
+    const nombre = (a.textContent || "").trim();
+    if (id && nombre) items.push({ id, nombre });
+  }
+
+  cont.textContent = "";
+
+  if (!items.length) {
+    cont.textContent = "Aún no tienes películas guardadas.";
+    return;
+  }
+
+  const grid = document.createElement("div");
+  grid.className = "wow-grid";
+
+  for (const it of items) {
+    const { id, nombre } = it;
+    const { titulo } = splitNombre(nombre);
+    const movie = MOVIES_BY_TITLE.get(normalizaTitulo(titulo)) || null;
+
+    const imgSrc = movie ? firstNonEmpty(toStr(movie.image), toStr(movie.movie_banner), "") : "";
+    const dTitle = movie?.title || titulo || nombre;
+    const dDir = movie?.director || "—";
+    const dYear = movie?.release_date || "—";
+    const dDesc = movie ? recorta(toStr(movie.description), 200) : "";
+
+    const card = document.createElement("article");
+    card.className = "wow-card wow-card-body";
+
+    if (imgSrc) {
+      const fig = document.createElement("figure");
+      fig.className = "wow-fig";
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.src = imgSrc;
+      img.alt = `Poster: ${dTitle}`;
+      img.className = "wow-img";
+      fig.append(img);
+      card.append(fig);
     }
 
-    cont.textContent = "";
+    const h3 = document.createElement("h3");
+    h3.className = "wow-card-title";
+    h3.textContent = dTitle;
 
-    if (!items.length) {
-      cont.textContent = "Aún no tienes películas guardadas.";
-      return;
-    }
+    const meta = document.createElement("p");
+    meta.className = "wow-meta";
+    meta.append(badge("Director"), " ", dDir, " ", dot(), " ", badge("Año"), " ", dYear);
 
-    const grid = document.createElement("div");
-    grid.className = "wow-grid";
+    const pNom = document.createElement("p");
+    pNom.className = "wow-desc";
+    pNom.textContent = `Guardado como: ${nombre}`;
 
-    for (const it of items) {
-      const { id, nombre } = it;
-      const { titulo } = splitNombre(nombre);
-      const movie = MOVIES_BY_TITLE.get(normalizaTitulo(titulo)) || null;
+    const pDesc = document.createElement("p");
+    pDesc.className = "wow-desc";
+    pDesc.textContent = dDesc;
 
-      const imgSrc = movie ? firstNonEmpty(toStr(movie.image), toStr(movie.movie_banner), "") : "";
-      const dTitle = movie?.title || titulo || nombre;
-      const dDir = movie?.director || "—";
-      const dYear = movie?.release_date || "—";
-      const dDesc = movie ? recorta(toStr(movie.description), 200) : "";
-
-      const card = document.createElement("article");
-      card.className = "wow-card wow-card-body";
-
-      if (imgSrc) {
-        const fig = document.createElement("figure");
-        fig.className = "wow-fig";
-        const img = document.createElement("img");
-        img.loading = "lazy";
-        img.decoding = "async";
-        img.src = imgSrc;
-        img.alt = `Poster: ${dTitle}`;
-        img.className = "wow-img";
-        fig.append(img);
-        card.append(fig);
-      }
-
-      const h3 = document.createElement("h3");
-      h3.className = "wow-card-title";
-      h3.textContent = dTitle;
-
-      const meta = document.createElement("p");
-      meta.className = "wow-meta";
-      meta.append(badge("Director"), " ", dDir, " ", dot(), " ", badge("Año"), " ", dYear);
-
-      const pNom = document.createElement("p");
-      pNom.className = "wow-desc";
-      pNom.textContent = `Guardado como: ${nombre}`;
-
-      const pDesc = document.createElement("p");
-      pDesc.className = "wow-desc";
-      pDesc.textContent = dDesc;
-
+    if (conEliminar) {
       const acc = document.createElement("div");
       acc.className = "wow-actions wow-actions-wrap";
 
@@ -179,7 +182,7 @@ async function main() {
           input.value = id;
           form.append(input);
           await consume(enviaFormRecibeJson(URL_ELIMINA, form));
-          await main();
+          await inicializarFavoritos();
         } catch (err) {
           if (err instanceof ProblemDetailsError) {
             muestraError(err);
@@ -191,10 +194,20 @@ async function main() {
 
       acc.append(btnDel);
       card.append(h3, meta, pNom, pDesc, acc);
-      grid.append(card);
+    } else {
+      card.append(h3, meta, pNom, pDesc);
     }
 
-    cont.append(grid);
+    grid.append(card);
+  }
+
+  cont.append(grid);
+}
+
+/** Vista previa en inicio (sin eliminar). */
+export async function cargarPreviewFavoritos() {
+  try {
+    await renderFavoritosEnContenedor(el("tusFavoritos"), false);
   } catch (err) {
     if (err instanceof ProblemDetailsError) {
       muestraError(err);
@@ -204,4 +217,18 @@ async function main() {
   }
 }
 
-main();
+/** Página pelis-agregadas: lista con eliminar. */
+export async function inicializarFavoritos() {
+  const cont = el("favoritos");
+  if (!cont) return;
+
+  try {
+    await renderFavoritosEnContenedor(cont, true);
+  } catch (err) {
+    if (err instanceof ProblemDetailsError) {
+      muestraError(err);
+    } else {
+      muestraError(err instanceof Error ? err : new Error(String(err)));
+    }
+  }
+}

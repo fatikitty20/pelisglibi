@@ -4,10 +4,12 @@ import { enviaFormRecibeJson } from "./lib/enviaFormRecibeJson.js";
 import { enviaJsonRecibeJson } from "./enviaJsonRecibeJson.js";
 import { ProblemDetailsError } from "./lib/ProblemDetailsError.js";
 import { muestraError } from "./lib/muestraError.js";
+import { cargarPreviewFavoritos, inicializarFavoritos } from "./favoritos.js";
 
 const API_URL = "https://ghibliapi.vercel.app/films";
 const URL_AGREGA = "php/pelicula-agrega.php";
 const URL_JSON_SALUDO = "php/json.php";
+const LS_NOMBRE_USUARIO = "usuarioSaludoNombre";
 
 /**
  * Manejo de errores: Problem Details del servidor y fallback amigable.
@@ -31,7 +33,27 @@ function el(id) {
   return document.getElementById(id);
 }
 
-async function cargarCatalogo() {
+/**
+ * @param {unknown} v
+ */
+function toStr(v) {
+  return typeof v === "string" ? v : "";
+}
+
+/**
+ * @param {...string} vals
+ */
+function firstNonEmpty(...vals) {
+  for (const v of vals) {
+    if (v && v.trim() !== "") return v;
+  }
+  return "";
+}
+
+/**
+ * @param {boolean} mostrarBotonFavorito
+ */
+async function cargarCatalogo(mostrarBotonFavorito) {
   const catalogo = el("catalogo");
   if (!catalogo) return;
 
@@ -59,8 +81,23 @@ async function cargarCatalogo() {
           : p.description
         : "";
 
+    const imgSrc = firstNonEmpty(toStr(p?.image), toStr(p?.movie_banner), "");
+
     const card = document.createElement("article");
     card.className = "wow-card wow-card-body";
+
+    if (imgSrc) {
+      const fig = document.createElement("figure");
+      fig.className = "wow-fig";
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.src = imgSrc;
+      img.alt = `Poster: ${title}`;
+      img.className = "wow-img";
+      fig.append(img);
+      card.append(fig);
+    }
 
     const h3 = document.createElement("h3");
     h3.className = "wow-card-title";
@@ -74,37 +111,50 @@ async function cargarCatalogo() {
     pDesc.className = "wow-desc";
     pDesc.textContent = desc;
 
-    const acc = document.createElement("div");
-    acc.className = "wow-actions";
+    if (mostrarBotonFavorito) {
+      const acc = document.createElement("div");
+      acc.className = "wow-actions";
 
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "wow-btn wow-btn-primary";
-    btn.textContent = "Agregar a Favoritos";
-    btn.addEventListener("click", async () => {
-      try {
-        const form = document.createElement("form");
-        form.method = "post";
-        const inpId = document.createElement("input");
-        inpId.name = "id";
-        inpId.value = id;
-        const inpNombre = document.createElement("input");
-        inpNombre.name = "nombre";
-        inpNombre.value = `${title} – ${director} (${year})`;
-        form.append(inpId, inpNombre);
-        await consume(enviaFormRecibeJson(URL_AGREGA, form));
-        alert("Película agregada a favoritos.");
-      } catch (err) {
-        manejaErrores(err);
-      }
-    });
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "wow-btn wow-btn-primary";
+      btn.textContent = "Agregar a Favoritos";
+      btn.addEventListener("click", async () => {
+        try {
+          const form = document.createElement("form");
+          form.method = "post";
+          const inpId = document.createElement("input");
+          inpId.name = "id";
+          inpId.value = id;
+          const inpNombre = document.createElement("input");
+          inpNombre.name = "nombre";
+          inpNombre.value = `${title} – ${director} (${year})`;
+          form.append(inpId, inpNombre);
+          await consume(enviaFormRecibeJson(URL_AGREGA, form));
+          alert("Película agregada a favoritos.");
+          await inicializarFavoritos();
+        } catch (err) {
+          manejaErrores(err);
+        }
+      });
 
-    acc.append(btn);
-    card.append(h3, meta, pDesc, acc);
+      acc.append(btn);
+      card.append(h3, meta, pDesc, acc);
+    } else {
+      card.append(h3, meta, pDesc);
+    }
+
     grid.append(card);
   }
 
   catalogo.append(grid);
+}
+
+function pintarSaludoHeader() {
+  const saludo = el("saludoUsuario");
+  if (!saludo) return;
+  const nombre = (localStorage.getItem(LS_NOMBRE_USUARIO) || "").trim();
+  saludo.textContent = nombre ? `¡Hola, ${nombre}!` : "";
 }
 
 function prepararSaludo() {
@@ -133,6 +183,9 @@ function prepararSaludo() {
         msg += ` (guardado en BD #${json.id})`;
       }
       spanRespuesta.textContent = msg;
+      localStorage.setItem(LS_NOMBRE_USUARIO, nombre);
+      pintarSaludoHeader();
+      await cargarPreviewFavoritos();
     } catch (err) {
       manejaErrores(err);
     }
@@ -140,9 +193,23 @@ function prepararSaludo() {
 }
 
 async function main() {
-  prepararSaludo();
+  const pagina = document.body.dataset.pagina === "agregadas" ? "agregadas" : "inicio";
+
+  if (pagina === "inicio") {
+    prepararSaludo();
+    try {
+      await cargarPreviewFavoritos();
+      await cargarCatalogo(false);
+    } catch (e) {
+      manejaErrores(e);
+    }
+    return;
+  }
+
+  pintarSaludoHeader();
   try {
-    await cargarCatalogo();
+    await cargarCatalogo(true);
+    await inicializarFavoritos();
   } catch (e) {
     manejaErrores(e);
   }

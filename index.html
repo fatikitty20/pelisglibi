@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="css/wow.css" />
   <script type="module" src="js/lib/manejaErrores.js"></script>
 </head>
-<body>
+<body data-pagina="inicio">
   <header class="wow-header">
     <section class="wow-container">
       <h1 class="wow-title">🎬 Catálogo de Películas (Ghibli)</h1>
@@ -47,7 +47,17 @@
     </section>
 
     <section class="wow-container">
+      <h2 class="wow-form-title">💾 Tus favoritos</h2>
+      <p class="wow-help">Resumen de lo guardado en la base. Para agregar o eliminar, entra en Pelis agregadas.</p>
+      <div id="tusFavoritos" aria-live="polite"></div>
+      <p class="wow-form-actions">
+        <a class="wow-btn wow-btn-primary" href="pelis-agregadas.html">Ir a Pelis agregadas</a>
+      </p>
+    </section>
+
+    <section class="wow-container">
       <h2 class="wow-form-title">🎞️ Catálogo</h2>
+      <p class="wow-help">Explora las películas (solo lectura). El botón para favoritos está en la otra página.</p>
       <div id="catalogo"></div>
     </section>
   </main>

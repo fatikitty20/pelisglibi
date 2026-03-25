@@ -8,10 +8,11 @@
   <link rel="stylesheet" href="css/wow.css" />
   <script type="module" src="js/lib/manejaErrores.js"></script>
 </head>
-<body>
+<body data-pagina="agregadas">
   <header class="wow-header">
     <section class="wow-container">
       <h1 class="wow-title">🎬 Películas agregadas</h1>
+      <p id="saludoUsuario" class="wow-saludo" aria-live="polite"></p>
       <nav class="wow-tabs" aria-label="Navegación principal">
         <a href="index.html" class="wow-tab">INICIO</a>
         <a href="pelis-agregadas.html" class="wow-tab is-active" aria-current="page">PELIS AGREGADAS</a>
@@ -21,7 +22,14 @@
 
   <main class="wow-main">
     <section class="wow-container">
+      <h2 class="wow-form-title">🎞️ Catálogo — agregar a favoritos</h2>
+      <p class="wow-help">Elige una película y usa el botón para guardarla.</p>
+      <div id="catalogo"></div>
+    </section>
+
+    <section class="wow-container">
       <h2 class="wow-form-title">💾 Tus favoritos</h2>
+      <p class="wow-help">Aquí puedes ver lo guardado y eliminarlo.</p>
       <div id="favoritos" aria-live="polite"></div>
     </section>
   </main>
@@ -29,11 +37,11 @@
   <footer class="wow-footer">
     <section class="wow-container">
       <small>
-        <a class="wow-link" href="index.html">Volver al catálogo</a>
+        <a class="wow-link" href="index.html">Volver al inicio</a>
       </small>
     </section>
   </footer>
 
-  <script type="module" src="js/favoritos.js"></script>
+  <script type="module" src="js/inicio.js"></script>
 </body>
 </html>
